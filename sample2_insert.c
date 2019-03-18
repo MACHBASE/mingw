@@ -23,7 +23,7 @@
     {                                           \
         printError(gEnv, gCon, aSTMT, aMsg);    \
         goto error;                             \
-    }                                        
+    }
 
 
 SQLHENV 	gEnv;
@@ -81,14 +81,14 @@ int connectDB()
 {
     char sConnStr[1024];
 
-    if( SQLAllocEnv(&gEnv) != SQL_SUCCESS ) 
+    if( SQLAllocEnv(&gEnv) != SQL_SUCCESS )
     {
         printf("SQLAllocEnv error\n");
 
         return RC_FAILURE;
     }
 
-    if( SQLAllocConnect(gEnv, &gCon) != SQL_SUCCESS ) 
+    if( SQLAllocConnect(gEnv, &gCon) != SQL_SUCCESS )
     {
         printf("SQLAllocConnect error\n");
 
@@ -124,7 +124,7 @@ int connectDB()
 
 void disconnectDB()
 {
-    if( SQLDisconnect(gCon) != SQL_SUCCESS ) 
+    if( SQLDisconnect(gCon) != SQL_SUCCESS )
     {
         printError(gEnv, gCon, NULL, "SQLDisconnect error");
     }
@@ -142,7 +142,7 @@ int executeDirectSQL(const char *aSQL, int aErrIgnore)
 
     if( SQLAllocStmt(gCon, &sStmt) != SQL_SUCCESS )
     {
-        if( aErrIgnore == 0 ) 
+        if( aErrIgnore == 0 )
         {
             printError(gEnv, gCon, sStmt, "SQLAllocStmt Error");
             return RC_FAILURE;
@@ -164,7 +164,7 @@ int executeDirectSQL(const char *aSQL, int aErrIgnore)
 
     if( SQLFreeStmt(sStmt, SQL_DROP) != SQL_SUCCESS )
     {
-        if (aErrIgnore == 0) 
+        if (aErrIgnore == 0)
         {
             printError(gEnv, gCon, sStmt, "SQLFreeStmt Error");
             sStmt = SQL_NULL_HSTMT;
@@ -173,7 +173,7 @@ int executeDirectSQL(const char *aSQL, int aErrIgnore)
     }
     sStmt = SQL_NULL_HSTMT;
 
-    return RC_SUCCESS; 
+    return RC_SUCCESS;
 }
 
 int prepareExecuteSQL(const char *aSQL)
@@ -213,7 +213,7 @@ error:
         SQLFreeStmt(sStmt, SQL_DROP);
         sStmt = SQL_NULL_HSTMT;
     }
-    
+
     return RC_FAILURE;
 }
 
@@ -239,7 +239,7 @@ int createTable()
 void directInsert()
 {
     int     i;
-    char    query[2 * 1024];
+    char    query[3 * 1024];
 
     short   sSeq;
     int     sScore;
@@ -322,19 +322,19 @@ int selectTable()
     char                 sImage[1024];
 
 
-    if( SQLAllocStmt(gCon, &sStmt) != SQL_SUCCESS ) 
+    if( SQLAllocStmt(gCon, &sStmt) != SQL_SUCCESS )
     {
         printError(gEnv, gCon, sStmt, "SQLAllocStmt Error");
         goto error;
     }
 
-    if( SQLPrepare(sStmt, (SQLCHAR *)sSQL, SQL_NTS) != SQL_SUCCESS ) 
+    if( SQLPrepare(sStmt, (SQLCHAR *)sSQL, SQL_NTS) != SQL_SUCCESS )
     {
         printError(gEnv, gCon, sStmt, "SQPrepare Error");
         goto error;
     }
 
-    if( SQLExecute(sStmt) != SQL_SUCCESS ) 
+    if( SQLExecute(sStmt) != SQL_SUCCESS )
     {
         printError(gEnv, gCon, sStmt, "SQLExecute Error");
         goto error;
@@ -354,7 +354,7 @@ int selectTable()
 
     sRC = SQLBindCol(sStmt, 5, SQL_C_DOUBLE, &sRatio, 0, &sRatioLen);
     CHECK_STMT_RESULT(sRC, sStmt, "SQLBindCol 5 Error");
-    
+
     sRC = SQLBindCol(sStmt, 6, SQL_C_CHAR, sId, sizeof(sId), &sIdLen);
     CHECK_STMT_RESULT(sRC, sStmt, "SQLBindCol 6 Error");
 
@@ -455,6 +455,6 @@ error:
     {
         disconnectDB();
     }
-    
+
     return RC_FAILURE;
 }
