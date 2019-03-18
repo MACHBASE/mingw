@@ -19,7 +19,7 @@
         {                                                       \
             return RC_FAILURE;                                  \
         }                                                       \
-    } 
+    }
 
 
 SQLHENV 	gEnv;
@@ -48,7 +48,7 @@ void printError(SQLHENV aEnv, SQLHDBC aCon, SQLHSTMT aStmt, char *aMsg)
     }
 
     if( SQLError(aEnv, aCon, aStmt, sSqlState, &sNativeError,
-        sErrorMsg, SQL_MAX_MESSAGE_LENGTH, &sMsgLength) == SQL_SUCCESS )
+                 sErrorMsg, SQL_MAX_MESSAGE_LENGTH, &sMsgLength) == SQL_SUCCESS )
     {
         printf("SQLSTATE-[%s], Machbase-[%ld][%s]\n", sSqlState, sNativeError, sErrorMsg);
     }
@@ -62,7 +62,7 @@ int checkAppendError(SQLHENV aEnv, SQLHDBC aCon, SQLHSTMT aStmt)
     SQLSMALLINT     sMsgLength;
 
     if( SQLError(aEnv, aCon, aStmt, sSqlState, &sNativeError,
-        sErrorMsg, SQL_MAX_MESSAGE_LENGTH, &sMsgLength) != SQL_SUCCESS )
+                 sErrorMsg, SQL_MAX_MESSAGE_LENGTH, &sMsgLength) != SQL_SUCCESS )
     {
         return RC_FAILURE;
     }
@@ -80,11 +80,11 @@ int checkAppendError(SQLHENV aEnv, SQLHDBC aCon, SQLHSTMT aStmt)
 }
 
 void appendDumpError(SQLHSTMT    aStmt,
-                 SQLINTEGER  aErrorCode,
-                 SQLPOINTER  aErrorMessage,
-                 SQLLEN      aErrorBufLen,
-                 SQLPOINTER  aRowBuf,
-                 SQLLEN      aRowBufLen)
+                     SQLINTEGER  aErrorCode,
+                     SQLPOINTER  aErrorMessage,
+                     SQLLEN      aErrorBufLen,
+                     SQLPOINTER  aRowBuf,
+                     SQLLEN      aRowBufLen)
 {
     char       sErrMsg[1024] = {0, };
     char       sRowMsg[32 * 1024] = {0, };
@@ -114,20 +114,20 @@ time_t getTimeStamp()
 #endif
     FILETIME         sFT;
     unsigned __int64 sTempResult = 0;
-	
+
     GetSystemTimeAsFileTime(&sFT);
     sTempResult |= sFT.dwHighDateTime;
     sTempResult <<= 32;
     sTempResult |= sFT.dwLowDateTime;
 
     sTempResult -= DELTA_EPOCH_IN_MICROSECS;
-	sTempResult /= 10;
-	
+    sTempResult /= 10;
+
     return sTempResult;
 #else
     struct timeval sTimeVal;
     int            sRet;
-	
+
     sRet = gettimeofday(&sTimeVal, NULL);
 
     if (sRet == 0)
@@ -138,20 +138,20 @@ time_t getTimeStamp()
     {
         return 0;
     }
-#endif	
+#endif
 }
 
 int connectDB()
 {
     char sConnStr[1024];
 
-    if( SQLAllocEnv(&gEnv) != SQL_SUCCESS ) 
+    if( SQLAllocEnv(&gEnv) != SQL_SUCCESS )
     {
         printf("SQLAllocEnv error\n");
         return RC_FAILURE;
     }
 
-    if( SQLAllocConnect(gEnv, &gCon) != SQL_SUCCESS ) 
+    if( SQLAllocConnect(gEnv, &gCon) != SQL_SUCCESS )
     {
         printf("SQLAllocConnect error\n");
 
@@ -168,7 +168,7 @@ int connectDB()
                           SQL_NTS,
                           NULL, 0, NULL,
                           SQL_DRIVER_NOPROMPT ) != SQL_SUCCESS
-      )
+        )
     {
 
         printError(gEnv, gCon, NULL, "SQLDriverConnect error");
@@ -187,7 +187,7 @@ int connectDB()
 
 void disconnectDB()
 {
-    if( SQLDisconnect(gCon) != SQL_SUCCESS ) 
+    if( SQLDisconnect(gCon) != SQL_SUCCESS )
     {
         printError(gEnv, gCon, NULL, "SQLDisconnect error");
     }
@@ -205,7 +205,7 @@ int executeDirectSQL(const char *aSQL, int aErrIgnore)
 
     if( SQLAllocStmt(gCon, &sStmt) != SQL_SUCCESS )
     {
-        if( aErrIgnore == 0 ) 
+        if( aErrIgnore == 0 )
         {
             printError(gEnv, gCon, sStmt, "SQLAllocStmt Error");
             return RC_FAILURE;
@@ -227,7 +227,7 @@ int executeDirectSQL(const char *aSQL, int aErrIgnore)
 
     if( SQLFreeStmt(sStmt, SQL_DROP) != SQL_SUCCESS )
     {
-        if (aErrIgnore == 0) 
+        if (aErrIgnore == 0)
         {
             printError(gEnv, gCon, sStmt, "SQLFreeStmt Error");
             sStmt = SQL_NULL_HSTMT;
@@ -236,7 +236,7 @@ int executeDirectSQL(const char *aSQL, int aErrIgnore)
     }
     sStmt = SQL_NULL_HSTMT;
 
-    return RC_SUCCESS; 
+    return RC_SUCCESS;
 }
 
 int createTable()
@@ -295,7 +295,7 @@ int appendData(SQLHSTMT aStmt)
     /* ipv6 */
     sParam[7].mIP.mLength       = SQL_APPEND_IP_NULL;
     /* datetime */
-    sParam[8].mDateTime.mTime   = SQL_APPEND_DATETIME_NULL;	
+    sParam[8].mDateTime.mTime   = SQL_APPEND_DATETIME_NULL;
     /* text */
     sParam[9].mText.mLength     = SQL_APPEND_TEXT_NULL;
     /* binary */
@@ -331,12 +331,12 @@ int appendData(SQLHSTMT aStmt)
 
 
     /* IPv4 : ipv4 from binary */
-	/*
-    sParam[6].mIP.mLength  = SQL_APPEND_IP_IPV4;
-    *(in_addr_t *)(sParam[7].mIP.mAddr) = inet_addr("192.168.0.1");
-    sRC = SQLAppendDataV2(aStmt, sParam);
-    CHECK_APPEND_RESULT(sRC, gEnv, gCon, aStmt);
-   */
+    /*
+      sParam[6].mIP.mLength  = SQL_APPEND_IP_IPV4;
+      *(in_addr_t *)(sParam[7].mIP.mAddr) = inet_addr("192.168.0.1");
+      sRC = SQLAppendDataV2(aStmt, sParam);
+      CHECK_APPEND_RESULT(sRC, gEnv, gCon, aStmt);
+    */
 
     /* IPv4 : ipv4 from string */
     sParam[6].mIP.mLength     = SQL_APPEND_IP_STRING;
@@ -368,9 +368,9 @@ int appendData(SQLHSTMT aStmt)
 
 
     sParam[7].mIP.mLength       = SQL_APPEND_IP_NULL; /* recover */
-	
+
     /*  DATETIME : absolute value */
-    sParam[8].mDateTime.mTime      = IFLUX_UINT64_LITERAL(1000000000);
+    sParam[8].mDateTime.mTime      = MACHBASE_UINT64_LITERAL(1000000000);
     sRC = SQLAppendDataV2(aStmt, sParam);
     CHECK_APPEND_RESULT(sRC, gEnv, gCon, aStmt);
 
@@ -393,7 +393,7 @@ int appendData(SQLHSTMT aStmt)
     sParam[8].mDateTime.mTM.tm_mday  = 31;
     sRC = SQLAppendDataV2(aStmt, sParam);
     CHECK_APPEND_RESULT(sRC, gEnv, gCon, aStmt);
-	
+
 
     /*  TEXT : string */
     memset(sText, 'X', sizeof(sText));
@@ -419,7 +419,7 @@ int appendClose(SQLHSTMT aStmt)
     long sSuccessCount = 0;
     long sFailureCount = 0;
 
-    if( SQLAppendClose(aStmt, &sSuccessCount, &sFailureCount) != SQL_SUCCESS )
+    if( SQLAppendClose(aStmt, (SQLBIGINT*)&sSuccessCount, (SQLBIGINT*)&sFailureCount) != SQL_SUCCESS )
     {
         printError(gEnv, gCon, aStmt, "SQLAppendClose Error");
         return RC_FAILURE;
@@ -457,7 +457,7 @@ int main()
         goto error;
     }
 
-    if( SQLAllocStmt(gCon, &sStmt) != SQL_SUCCESS ) 
+    if( SQLAllocStmt(gCon, &sStmt) != SQL_SUCCESS )
     {
         printError(gEnv, gCon, sStmt, "SQLAllocStmt Error");
         goto error;

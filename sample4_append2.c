@@ -17,7 +17,7 @@
     {                                           \
         printError(gEnv, gCon, aSTMT, aMsg);    \
         goto error;                             \
-    }                                        
+    }
 
 
 SQLHENV 	gEnv;
@@ -87,7 +87,7 @@ time_t getTimeStamp()
 #endif
     FILETIME         sFT;
     unsigned __int64 sTempResult = 0;
-	
+
     GetSystemTimeAsFileTime(&sFT);
     sTempResult |= sFT.dwHighDateTime;
     sTempResult <<= 32;
@@ -95,12 +95,12 @@ time_t getTimeStamp()
 
     sTempResult -= DELTA_EPOCH_IN_MICROSECS;
 	sTempResult /= 10;
-	
+
     return sTempResult;
 #else
     struct timeval sTimeVal;
     int            sRet;
-	
+
     sRet = gettimeofday(&sTimeVal, NULL);
 
     if (sRet == 0)
@@ -119,13 +119,13 @@ int connectDB()
 {
     char sConnStr[1024];
 
-    if( SQLAllocEnv(&gEnv) != SQL_SUCCESS ) 
+    if( SQLAllocEnv(&gEnv) != SQL_SUCCESS )
     {
         printf("SQLAllocEnv error\n");
         return RC_FAILURE;
     }
 
-    if( SQLAllocConnect(gEnv, &gCon) != SQL_SUCCESS ) 
+    if( SQLAllocConnect(gEnv, &gCon) != SQL_SUCCESS )
     {
         printf("SQLAllocConnect error\n");
 
@@ -161,7 +161,7 @@ int connectDB()
 
 void disconnectDB()
 {
-    if( SQLDisconnect(gCon) != SQL_SUCCESS ) 
+    if( SQLDisconnect(gCon) != SQL_SUCCESS )
     {
         printError(gEnv, gCon, NULL, "SQLDisconnect error");
     }
@@ -179,7 +179,7 @@ int executeDirectSQL(const char *aSQL, int aErrIgnore)
 
     if( SQLAllocStmt(gCon, &sStmt) != SQL_SUCCESS )
     {
-        if( aErrIgnore == 0 ) 
+        if( aErrIgnore == 0 )
         {
             printError(gEnv, gCon, sStmt, "SQLAllocStmt Error");
             return RC_FAILURE;
@@ -201,7 +201,7 @@ int executeDirectSQL(const char *aSQL, int aErrIgnore)
 
     if( SQLFreeStmt(sStmt, SQL_DROP) != SQL_SUCCESS )
     {
-        if (aErrIgnore == 0) 
+        if (aErrIgnore == 0)
         {
             printError(gEnv, gCon, sStmt, "SQLFreeStmt Error");
             sStmt = SQL_NULL_HSTMT;
@@ -210,7 +210,7 @@ int executeDirectSQL(const char *aSQL, int aErrIgnore)
     }
     sStmt = SQL_NULL_HSTMT;
 
-    return RC_SUCCESS; 
+    return RC_SUCCESS;
 }
 
 int createTable()
@@ -267,7 +267,7 @@ int appendData(SQLHSTMT aStmt)
 
     memset(sBuf, 0, sizeof(sBuf));
 	memset(sParam, 0, sizeof(sParam));
-	
+
     while( fgets(sBuf, 1024, sFp ) != NULL )
     {
         if( strlen(sBuf) < 1)
@@ -280,12 +280,12 @@ int appendData(SQLHSTMT aStmt)
 
         while( sToken != NULL )
         {
-            
+
             switch(j){
                 case 0 : sParam[j].mShort = atoi(sToken); break;   //short
                 case 1 : sParam[j].mInteger = atoi(sToken); break; //int
-                case 2 : 
-					sParam[j].mLong = atoll(sToken); 
+                case 2 :
+					sParam[j].mLong = atoll(sToken);
 					break;    //long
                 case 3 : sParam[j].mFloat = atof(sToken); break;   //float
                 case 4 : sParam[j].mDouble = atof(sToken); break;  //double
@@ -344,7 +344,7 @@ int appendClose(SQLHSTMT aStmt)
     long sSuccessCount = 0;
     long sFailureCount = 0;
 
-    if( SQLAppendClose(aStmt, &sSuccessCount, &sFailureCount) != SQL_SUCCESS )
+    if( SQLAppendClose(aStmt, (SQLBIGINT*)&sSuccessCount, (SQLBIGINT*)&sFailureCount) != SQL_SUCCESS )
     {
         printError(gEnv, gCon, aStmt, "SQLAppendClose Error");
         return RC_FAILURE;
@@ -382,7 +382,7 @@ int main()
         goto error;
     }
 
-    if( SQLAllocStmt(gCon, &sStmt) != SQL_SUCCESS ) 
+    if( SQLAllocStmt(gCon, &sStmt) != SQL_SUCCESS )
     {
         printError(gEnv, gCon, sStmt, "SQLAllocStmt Error");
         goto error;

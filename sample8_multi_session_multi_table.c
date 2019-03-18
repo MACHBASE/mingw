@@ -199,7 +199,7 @@ int appendClose(SQLHENV aEnv, SQLHDBC aCon, SQLHSTMT aStmt)
     long sSuccessCount = 0;
     long sFailureCount = 0;
 
-    if( SQLAppendClose(aStmt, &sSuccessCount, &sFailureCount) != SQL_SUCCESS )
+    if( SQLAppendClose(aStmt, (SQLBIGINT*)&sSuccessCount, (SQLBIGINT*)&sFailureCount) != SQL_SUCCESS )
     {
         printError(aEnv, aCon, aStmt, "SQLAppendClose error");
         return RC_FAILURE;
@@ -215,7 +215,7 @@ int createTables(SQLHENV aEnv, SQLHDBC aCon)
     int      i;
     char    *sSchema[] = { "srcip1 ipv4, srcip2 ipv6, srcport short, dstip1 ipv4, dstip2 ipv6, dstport short, data1 long, data2 long",
                            "srcip1 ipv4, srcip2 ipv6, srcport short, dstip1 ipv4, dstip2 ipv6, dstport short, data1 long, data2 long",
-                           "machine ipv4, err integer, msg varchar(30)" 
+                           "machine ipv4, err integer, msg varchar(30)"
                          };
 
     char sDropQuery[256];
@@ -247,9 +247,9 @@ int appendF1(SQLHENV aEnv, SQLHDBC aCon, SQLHSTMT aStmt, FILE *aFp)
 
     memset(sParam, 0, sizeof(sParam));
 
-    fscanf(aFp, "%s %s %hd %s %s %hd %I64d %I64d\n", 
-                sData[0], sData[1], &sParam[2].mShort, 
-                sData[2], sData[3], &sParam[5].mShort, 
+    fscanf(aFp, "%s %s %hd %s %s %hd %I64d %I64d\n",
+                sData[0], sData[1], &sParam[2].mShort,
+                sData[2], sData[3], &sParam[5].mShort,
                 &sParam[6].mLong, &sParam[7].mLong);
 
 
@@ -406,7 +406,7 @@ void *eachThread(void *aIdx)
     int        sThrNo = *(int *)aIdx;
 
     // Alloc ENV and DBC
-    if( connectDB(&sEnv, &sCon) == RC_SUCCESS ) 
+    if( connectDB(&sEnv, &sCon) == RC_SUCCESS )
     {
         printf("[%d]connectDB success.\n", sThrNo);
     }
@@ -474,7 +474,7 @@ void *eachThread(void *aIdx)
                     if( appendF1(sEnv, sCon, sStmt[0], sFp) == RC_FAILURE )
                     {
                         goto error;
-                    } 
+                    }
                     break;
                 case 2://f2
                     if( appendF2(sEnv, sCon, sStmt[1],sFp) == RC_FAILURE )
@@ -532,7 +532,7 @@ void *eachThread(void *aIdx)
     pthread_exit(NULL);
 
 	return NULL;
-	
+
 error:
     for( i = 0; i < LOG_FILE_CNT; i++)
     {
@@ -554,7 +554,7 @@ error:
     }
 
     pthread_exit(NULL);
-	
+
 	return NULL;
 }
 
